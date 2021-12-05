@@ -28,14 +28,14 @@ npm run test
 ```
 
 ## Performance
-Only count endpoint can become bottleneck. Tested it with 10 Lac patients data and response time is close of 100ms.
+Only count endpoint can become bottleneck. Tested it with 10 Lac patients data and response time is close of 65ms.
 To test, run seed first it will add 10 Lac patients data. Then run endpoint and count time or use below query in psql.
 ```sql
 explain analyse
 select count(*)
 from patients p
-where round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric, 2) >= 25
-  and round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric, 2) < 30;
+where p.weight_kg / ((p.height_cm ^ 2) / 10000) >= 25
+  and p.weight_kg / ((p.height_cm ^ 2) / 10000) < 30;
 ```
 
 
