@@ -1,4 +1,4 @@
-# Vamstar Project
+# Vam100000 Project
 
 ## Local setup
 * Create database and populate .env file
