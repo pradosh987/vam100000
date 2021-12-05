@@ -3,6 +3,7 @@ import { Patient } from "../../models/Patient";
 import { knex } from "../../common/objection";
 import { snakeCaseMappers } from "objection";
 import createHttpError from "http-errors";
+import { BMICategory } from "../../models/BMICategory";
 
 const { parse } = snakeCaseMappers();
 
@@ -70,19 +71,23 @@ export const count = middleware(async (req, res) => {
     throw createHttpError(400, "Invalid category");
   }
 
+  const { lowerBmiRange, upperBmiRange } = await BMICategory.query()
+    .findOne({})
+    .whereRaw("lower(category) = lower(:category)", { category })
+    .select(["lowerBmiRange", "upperBmiRange"])
+    .limit(1)
+    .throwIfNotFound();
+
   const {
     rows: [{ count }],
   } = await knex.raw(
     `
             select count(*)
-            from patients p,
-                 (select lower_bmi_range, upper_bmi_range
-                  from bmi_categories
-                  where lower(category) = lower(:category)) as cat
-            where round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric, 2) >= cat.lower_bmi_range
-              and round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric, 2) < cat.upper_bmi_range;
+            from patients p
+            where round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric, 2) >= :lowerBmiRange
+              and round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric, 2) < :upperBmiRange
         `,
-    { category }
+    { lowerBmiRange, upperBmiRange }
   );
   return res.json({ data: count });
 });
