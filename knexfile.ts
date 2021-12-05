@@ -10,6 +10,15 @@ module.exports = {
     },
     debug: false,
   },
+  test: {
+    client: "postgresql",
+    connection: {
+      database: config.database.testDatabase,
+      user: config.database.username,
+      password: config.database.password,
+    },
+    debug: false,
+  },
 
   staging: {
     client: "postgresql",
