@@ -78,11 +78,13 @@ const seed = async () => {
   ];
 
   await knex("patients").insert(
-    patientsData.map((p) => ({
-      gender: p.Gender.toUpperCase(),
-      height_cm: p.HeightCm,
-      weight_kg: p.WeightKg,
-    }))
+    [...patientsData, ...patientsData, ...patientsData, ...patientsData].map(
+      (p) => ({
+        gender: p.Gender.toUpperCase(),
+        height_cm: p.HeightCm,
+        weight_kg: p.WeightKg,
+      })
+    )
   );
 };
 
