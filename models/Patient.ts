@@ -6,7 +6,7 @@ export class Patient extends Model {
 
   id: number;
   heightCm: number;
-  weightCm: number;
+  weightKg: number;
   gender: Gender;
   createdAt: string;
   updatedAt: string;

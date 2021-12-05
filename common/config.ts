@@ -13,4 +13,5 @@ export const config = {
     testDatabase: process.env.DB_NAME_TEST,
     connections: process.env.DB_CONNECTIONS,
   },
+  logLevel: process.env.LOG_LEVEL || "info",
 };

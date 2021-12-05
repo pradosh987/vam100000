@@ -8,7 +8,7 @@ module.exports = {
       user: config.database.username,
       password: config.database.password,
     },
-    debug: false,
+    debug: true,
   },
   test: {
     client: "postgresql",
