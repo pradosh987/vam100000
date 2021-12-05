@@ -2,6 +2,10 @@
 
 ## Local setup
 * Create database and populate .env file
+* Run npm install
+```shell
+npm i
+```
 * Run migrations and seed data
 ```
  npx knex migrate:latest
