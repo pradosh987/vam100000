@@ -41,3 +41,23 @@ where round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric
 * Create new pair of SSH keys and add private to Github secret with name `SSH_KEY` and add public key to the server's authorized keys
 * Add server's IP to Github secret's using name `SERVER_IP`
 * Github will automatically deploy to the server on every commit to master.
+
+### Nginx config
+```
+limit_req_zone $binary_remote_addr zone=ip:10m rate=5r/s;
+server {
+    server_name example.com;
+    listen  80;
+    gzip on;
+    gzip_types      text/plain application/json;
+    gzip_min_length 128;
+    client_max_body_size 1M;
+    
+        location / {
+            proxy_set_header   X-Forwarded-For $remote_addr;
+            proxy_set_header   Host $http_host;
+            proxy_pass         http://127.0.0.1:4000;
+            limit_req zone=ip burst=12 delay=8;
+        }
+}
+```
