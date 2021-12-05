@@ -50,7 +50,6 @@ export async function seed(knex: Knex): Promise<void> {
   const patientsData = (await fs
     .readFile(path.join(__dirname, "patients.json"), "utf8")
     .then(JSON.parse)) as unknown as any[];
-  console.log({ patientsData });
   await knex("patients").insert(
     patientsData.map((p) => ({
       gender: p.Gender.toUpperCase(),
