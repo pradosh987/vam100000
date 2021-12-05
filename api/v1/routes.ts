@@ -10,6 +10,7 @@ export const routes = (app: Express) => {
 
   const patientRouter = Router();
   patientRouter.get("/", patientsController.index);
+  patientRouter.get("/:patientId", patientsController.get);
   app.use("/v1/patients", patientRouter);
   app.use(objectionJsErrorHandler);
   app.use(defaultErrorHandler);

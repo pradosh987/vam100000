@@ -3,6 +3,7 @@ import { app } from "../../../common/express";
 import { routes } from "../routes";
 import { Patient } from "../../../models/Patient";
 import { BMICategory } from "../../../models/BMICategory";
+import { Gender } from "../../../enums/gender";
 
 routes(app);
 
@@ -83,6 +84,35 @@ describe("Patients Controller", function () {
         // expect(p.healthRisk).toBeDefined();
         // expect(p.category).toBeDefined();
       });
+    });
+  });
+
+  describe("GET endpoint", function () {
+    it("should throw 400 for invalid patient id", async function () {
+      await request(app).get("/v1/patients/invalid-id").expect(400);
+    });
+
+    it("should throw 404 when patient id not found in DB", async function () {
+      await request(app).get("/v1/patients/99999999999999").expect(404);
+    });
+
+    it("should return patient with id", async function () {
+      const patient = await Patient.query()
+        .findOne({ heightCm: 161, weightKg: 85, gender: Gender.MALE })
+        .limit(1);
+
+      expect(patient).toBeTruthy();
+      const {
+        body: { data },
+      } = await request(app).get(`/v1/patients/${patient?.id}`).expect(200);
+
+      expect(data.id).toBe(patient?.id);
+      expect(data.gender).toBe(patient?.gender);
+      expect(data.heightCm).toBe(patient?.heightCm);
+      expect(data.weightKg).toBe(patient?.weightKg);
+      expect(data.bmi).toBe(52.8);
+      expect(data.category).toBe("Very severely obese");
+      expect(data.healthRisk).toBe("Very high risk");
     });
   });
 });
