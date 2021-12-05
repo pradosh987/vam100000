@@ -41,7 +41,8 @@ export const get = middleware(async (req, res) => {
   }
   const { rows } = await Patient.knex().raw(
     `
-            with pets as (select p.*, round(p.weight_kg / (p.height_cm:: float / 100)::numeric, 2) as bmi
+            with pets as (select p.*,
+                                 round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric, 2) as bmi
                           from patients p
                           where p.id = :patientId)
             select p.*, bc.category, bc.health_risk
@@ -61,4 +62,27 @@ export const get = middleware(async (req, res) => {
   }
   const patient = Patient.fromDatabaseJson(parse(rows[0]));
   res.json({ data: patient });
+});
+
+export const count = middleware(async (req, res) => {
+  const category = req.query.category?.toString();
+  if (!category?.length) {
+    throw createHttpError(400, "Invalid category");
+  }
+
+  const {
+    rows: [{ count }],
+  } = await knex.raw(
+    `
+            select count(*)
+            from patients p,
+                 (select lower_bmi_range, upper_bmi_range
+                  from bmi_categories
+                  where lower(category) = lower(:category)) as cat
+            where round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric, 2) >= cat.lower_bmi_range
+              and round(p.weight_kg / ((p.height_cm * p.height_cm):: float / 10000)::numeric, 2) < cat.upper_bmi_range;
+        `,
+    { category }
+  );
+  return res.json({ data: count });
 });

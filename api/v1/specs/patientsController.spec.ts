@@ -110,9 +110,29 @@ describe("Patients Controller", function () {
       expect(data.gender).toBe(patient?.gender);
       expect(data.heightCm).toBe(patient?.heightCm);
       expect(data.weightKg).toBe(patient?.weightKg);
-      expect(data.bmi).toBe(52.8);
-      expect(data.category).toBe("Very severely obese");
-      expect(data.healthRisk).toBe("Very high risk");
+      expect(data.bmi).toBe(32.79);
+      expect(data.category).toBe("Moderately obese");
+      expect(data.healthRisk).toBe("Medium risk");
+    });
+  });
+
+  describe("Count Endpoint", function () {
+    it("should return total number of patients in overweight category", async function () {
+      const { body } = await request(app)
+        .get("/v1/patients/count")
+        .query({ category: "Overweight" })
+        .expect(200);
+
+      expect(body.data).toBe(4);
+    });
+
+    it("should return total number of patients in normal category", async function () {
+      const { body } = await request(app)
+        .get("/v1/patients/count")
+        .query({ category: "Normal weight" })
+        .expect(200);
+
+      expect(body.data).toBe(8);
     });
   });
 });
