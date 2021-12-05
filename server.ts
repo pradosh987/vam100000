@@ -1,3 +1,4 @@
+import "./common/objection";
 import { config } from "./common/config";
 import { app } from "./common/express";
 import { routes } from "./api/v1/routes";
